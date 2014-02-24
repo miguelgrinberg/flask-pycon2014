@@ -24,6 +24,8 @@
             <ul class="nav navbar-nav navbar-right">
                 {% if not current_user.is_authenticated() %}
                 <li><a href="{{ url_for('auth.login') }}">Presenter Login</a></li>
+                {% else %}
+                <li><a href="{{ url_for('auth.logout') }}">Logout</a></li>
                 {% endif %}
             </ul>
         </div>
