@@ -1,4 +1,7 @@
-from flask import render_template, current_app, request, redirect, url_for
+from flask import render_template, current_app, request, redirect, url_for, \
+    flash
+from flask.ext.login import login_user
+from ..models import User
 from . import auth
 from .forms import LoginForm
 
@@ -10,5 +13,10 @@ def login():
         return redirect(url_for('.login', _external=True, _scheme='https'))
     form = LoginForm()
     if form.validate_on_submit():
-        pass
+        user = User.query.filter_by(email=form.email.data).first()
+        if user is None or not user.verify_password(form.password.data):
+            flash('Invalid email or password.')
+            return redirect(url_for('.login'))
+        login_user(user, form.remember_me.data)
+        return redirect(request.args.get('next') or url_for('talks.index'))
     return render_template('auth/login.html', form=form)
