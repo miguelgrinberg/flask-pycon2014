@@ -1,9 +1,9 @@
 from flask import render_template, flash, redirect, url_for
 from flask.ext.login import login_required, current_user
 from .. import db
-from ..models import User
+from ..models import User, Talk
 from . import talks
-from .forms import ProfileForm
+from .forms import ProfileForm, TalkForm
 
 
 @talks.route('/')
@@ -33,3 +33,23 @@ def profile():
     form.location.data = current_user.location
     form.bio.data = current_user.bio
     return render_template('talks/profile.html', form=form)
+
+
+@talks.route('/new', methods=['GET', 'POST'])
+@login_required
+def new_talk():
+    form = TalkForm()
+    if form.validate_on_submit():
+        talk = Talk(title=form.title.data,
+                    description=form.description.data,
+                    slides=form.slides.data,
+                    video=form.video.data,
+                    venue=form.venue.data,
+                    venue_url=form.venue_url.data,
+                    date=form.date.data,
+                    author=current_user)
+        db.session.add(talk)
+        db.session.commit()
+        flash('The talk was added successfully.')
+        return redirect(url_for('.index'))
+    return render_template('talks/edit_talk.html', form=form)
