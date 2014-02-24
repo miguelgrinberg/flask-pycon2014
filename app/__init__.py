@@ -17,5 +17,8 @@ def create_app(config_name):
     from .talks import talks as talks_blueprint
     app.register_blueprint(talks_blueprint)
 
+    from .auth import auth as auth_blueprint
+    app.register_blueprint(auth_blueprint, url_prefix='/auth')
+
     return app
 
