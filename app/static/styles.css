@@ -1,0 +1,9 @@
+.user-profile {
+    min-height: 140px;
+}
+
+.user-avatar {
+    float: left;
+    margin-right: 16px;
+    margin-bottom: 16px;
+}
