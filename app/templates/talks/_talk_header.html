@@ -1,0 +1,12 @@
+<div class="talk-header">
+    <h2>{{ talk.title }}</h2>
+    <h3>{{ talk.description }}</h3>
+    <p>
+        Presented by <a href="{{ url_for('talks.user', username=talk.author.username) }}">{{ talk.author.username }}</a> at
+        {% if talk.venue_url %}
+            <a href="{{ talk.venue_url }}">{{ talk.venue }}</a>
+        {% else %}
+            {{ talk.venue }}
+        {% endif %}
+    </p>
+</div>
