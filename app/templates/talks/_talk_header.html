@@ -8,5 +8,6 @@
         {% else %}
             {{ talk.venue }}
         {% endif %}
+        on {{ moment(talk.date, local=True).format('LL') }}.
     </p>
 </div>
