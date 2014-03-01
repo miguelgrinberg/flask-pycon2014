@@ -1,4 +1,9 @@
 <div class="talk-header">
+    {% if talk.author == current_user %}
+    <a class="btn btn-primary pull-right" href="{{ url_for('talks.edit_talk', id=talk.id) }}">Edit</a>
+    {% elif current_user.is_admin %}
+    <a class="btn btn-danger pull-right" href="{{ url_for('talks.edit_talk', id=talk.id) }}">Edit</a>
+    {% endif %}
     <h2><a href="{{ url_for('talks.talk', id=talk.id) }}">{{ talk.title }}</a></h2>
     <h3>{{ talk.description }}</h3>
     <p>
