@@ -38,3 +38,19 @@ div.talk-header p {
     font-style: italic;
     margin: 20px 0px 0px 0px;
 }
+
+div.talk-video {
+    width: 450px;
+    max-width: 450px;
+    display: inline-block;
+    margin: 5px;
+    vertical-align: middle;
+}
+
+div.talk-slides {
+    width: 450px;
+    max-width: 450px;
+    display: inline-block;
+    margin: 5px;
+    vertical-align: middle;
+}

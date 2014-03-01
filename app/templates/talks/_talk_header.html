@@ -1,5 +1,5 @@
 <div class="talk-header">
-    <h2>{{ talk.title }}</h2>
+    <h2><a href="{{ url_for('talks.talk', id=talk.id) }}">{{ talk.title }}</a></h2>
     <h3>{{ talk.description }}</h3>
     <p>
         Presented by <a href="{{ url_for('talks.user', username=talk.author.username) }}">{{ talk.author.username }}</a> at

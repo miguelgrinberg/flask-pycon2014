@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block page_content %}
+<div class="page-header">
+    {% include "talks/_talk_header.html" %}
+</div>
+<div class="talk-body">
+    {% if talk.video %}
+    <div class="talk-video">
+    {{ talk.video | safe }}
+    </div>
+    {% endif %}
+    {% if talk.slides %}
+    <div class="talk-slides">
+    {{ talk.slides | safe }}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
