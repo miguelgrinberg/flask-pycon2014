@@ -54,3 +54,40 @@ div.talk-slides {
     margin: 5px;
     vertical-align: middle;
 }
+
+.flask-pagedown-preview {
+    margin-top: 10px;
+    padding: 10px;
+    border: 1px solid #ccc;
+}
+
+.flask-pagedown-preview h1, .comment-body h1 {
+    font-size: 160%;
+}
+
+.flask-pagedown-preview h2, .comment-body h2 {
+    font-size: 140%;
+}
+
+.flask-pagedown-preview h3, .comment-body h3 {
+    font-size: 120%;
+}
+
+ul.comment-list {
+    list-style-type: none;
+    padding: 0px;
+}
+
+li.comment {
+    padding: 10px;
+}
+
+ul.comment-list li.comment:nth-child(odd)
+{
+    background-color: #eee;
+}
+
+ul.comment-list li.comment:nth-child(even)
+{
+    background-color: #fff;
+}

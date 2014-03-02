@@ -1,0 +1,8 @@
+<ul class="comment-list">
+{% for comment in comments %}
+    {% set index = loop.index %}
+    <li class="comment">
+        {% include "talks/_comment.html" %}
+    </li>
+{% endfor %}
+</ul>

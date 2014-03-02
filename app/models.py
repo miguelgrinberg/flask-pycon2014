@@ -1,5 +1,7 @@
 from datetime import datetime
 import hashlib
+from markdown import markdown
+import bleach
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask import request
 from flask.ext.login import UserMixin
@@ -21,6 +23,7 @@ class User(UserMixin, db.Model):
     member_since = db.Column(db.DateTime(), default=datetime.utcnow)
     avatar_hash = db.Column(db.String(32))
     talks = db.relationship('Talk', lazy='dynamic', backref='author')
+    comments = db.relationship('Comment', lazy='dynamic', backref='author')
 
     def __init__(self, **kwargs):
         super(User, self).__init__(**kwargs)
@@ -66,3 +69,31 @@ class Talk(db.Model):
     venue = db.Column(db.String(128))
     venue_url = db.Column(db.String(128))
     date = db.Column(db.DateTime())
+    comments = db.relationship('Comment', lazy='dynamic', backref='talk')
+
+
+class Comment(db.Model):
+    __tablename__ = 'comments'
+    id = db.Column(db.Integer, primary_key=True)
+    body = db.Column(db.Text)
+    body_html = db.Column(db.Text)
+    timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
+    author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    author_name = db.Column(db.String(64))
+    author_email = db.Column(db.String(64))
+    notify = db.Column(db.Boolean, default=True)
+    approved = db.Column(db.Boolean, default=False)
+    talk_id = db.Column(db.Integer, db.ForeignKey('talks.id'))
+
+    @staticmethod
+    def on_changed_body(target, value, oldvalue, initiator):
+        allowed_tags = ['a', 'abbr', 'acronym', 'b', 'blockquote', 'code',
+                        'em', 'i', 'li', 'ol', 'pre', 'strong', 'ul',
+                        'h1', 'h2', 'h3', 'p']
+        target.body_html = bleach.linkify(bleach.clean(
+            markdown(value, output_format='html'),
+            tags=allowed_tags, strip=True))
+
+
+db.event.listen(Comment.body, 'set', Comment.on_changed_body)
+

@@ -1,9 +1,9 @@
 from flask import render_template, flash, redirect, url_for, abort
 from flask.ext.login import login_required, current_user
 from .. import db
-from ..models import User, Talk
+from ..models import User, Talk, Comment
 from . import talks
-from .forms import ProfileForm, TalkForm
+from .forms import ProfileForm, TalkForm, CommentForm, PresenterCommentForm
 
 
 @talks.route('/')
@@ -51,13 +51,40 @@ def new_talk():
     return render_template('talks/edit_talk.html', form=form)
 
 
-@talks.route('/talk/<int:id>')
+@talks.route('/talk/<int:id>', methods=['GET', 'POST'])
 def talk(id):
     talk = Talk.query.get_or_404(id)
+    comment = None
+    if current_user.is_authenticated():
+        form = PresenterCommentForm()
+        if form.validate_on_submit():
+            comment = Comment(body=form.body.data,
+                              talk=talk,
+                              author=current_user,
+                              notify=False, approved=True)
+    else:
+        form = CommentForm()
+        if form.validate_on_submit():
+            comment = Comment(body=form.body.data,
+                              talk=talk,
+                              author_name=form.name.data,
+                              author_email=form.email.data,
+                              notify=form.notify.data, approved=False)
+    if comment:
+        db.session.add(comment)
+        db.session.commit()
+        if comment.approved:
+            flash('Your comment has been published.')
+        else:
+            flash('Your comment will be published after it is reviewed by '
+                  'the presenter.')
+        return redirect(url_for('.talk', id=talk.id) + '#top')
+    comments = talk.comments.order_by(Comment.timestamp.asc()).all()
     headers = {}
     if current_user.is_authenticated():
         headers['X-XSS-Protection'] = '0'
-    return render_template('talks/talk.html', talk=talk), 200, headers
+    return render_template('talks/talk.html', talk=talk, form=form,
+                           comments=comments), 200, headers
 
 
 @talks.route('/edit/<int:id>', methods=['GET', 'POST'])

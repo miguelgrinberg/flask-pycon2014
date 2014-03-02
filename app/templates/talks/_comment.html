@@ -1,0 +1,16 @@
+<p>
+    {% if comment.author %}
+        <span class="label label-primary">#{{ index }}</span>
+        <a href="{{ url_for('.user', username=comment.author.username) }}">{{ comment.author.username }}</a>
+    {% else %}
+        <span class="label label-default">#{{ index }}</span>
+        <b>{{ comment.author_name }}</b>
+        {% if current_user.is_authenticated() and (talk.author == current_user or current_user.is_admin) %}
+        (<a href="mailto:{{ comment.author_email }}">{{ comment.author_email }}</a>)
+        {% endif %}
+    {% endif %}
+    commented {{ moment(comment.timestamp).fromNow() }}:
+</p>
+<div class="comment-body">
+    {{ comment.body_html | safe }}
+</div>

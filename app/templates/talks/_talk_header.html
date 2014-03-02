@@ -6,6 +6,7 @@
     {% endif %}
     <h2><a href="{{ url_for('talks.talk', id=talk.id) }}">{{ talk.title }}</a></h2>
     <h3>{{ talk.description }}</h3>
+    <div class="pull-right"><a href="{{ url_for('talks.talk', id=talk.id) }}#comments"><span class="label label-default">Comments: {{ talk.comments.count() }}</span></a></div>
     <p>
         Presented by <a href="{{ url_for('talks.user', username=talk.author.username) }}">{{ talk.author.username }}</a> at
         {% if talk.venue_url %}
