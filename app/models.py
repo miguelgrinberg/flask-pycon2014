@@ -3,7 +3,8 @@ import hashlib
 from markdown import markdown
 import bleach
 from werkzeug.security import generate_password_hash, check_password_hash
-from flask import request
+from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
+from flask import request, current_app
 from flask.ext.login import UserMixin
 from . import db, login_manager
 
@@ -52,6 +53,28 @@ class User(UserMixin, db.Model):
         return '{url}/{hash}?s={size}&d={default}&r={rating}'.format(
             url=url, hash=hash, size=size, default=default, rating=rating)
 
+    def for_moderation(self, admin=False):
+        if admin and self.is_admin:
+            return Comment.for_moderation()
+        return Comment.query.join(Talk, Comment.talk_id == Talk.id).\
+            filter(Talk.author == self).filter(Comment.approved == False)
+
+    def get_api_token(self, expiration=300):
+        s = Serializer(current_app.config['SECRET_KEY'], expiration)
+        return s.dumps({'user': self.id}).decode('utf-8')
+
+    @staticmethod
+    def validate_api_token(token):
+        s = Serializer(current_app.config['SECRET_KEY'])
+        try:
+            data = s.loads(token)
+        except:
+            return None
+        id = data.get('user')
+        if id:
+            return User.query.get(id)
+        return None
+
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -70,6 +93,9 @@ class Talk(db.Model):
     venue_url = db.Column(db.String(128))
     date = db.Column(db.DateTime())
     comments = db.relationship('Comment', lazy='dynamic', backref='talk')
+
+    def approved_comments(self):
+        return self.comments.filter_by(approved=True)
 
 
 class Comment(db.Model):
@@ -93,6 +119,10 @@ class Comment(db.Model):
         target.body_html = bleach.linkify(bleach.clean(
             markdown(value, output_format='html'),
             tags=allowed_tags, strip=True))
+
+    @staticmethod
+    def for_moderation():
+        return Comment.query.filter(Comment.approved == False)
 
 
 db.event.listen(Comment.body, 'set', Comment.on_changed_body)

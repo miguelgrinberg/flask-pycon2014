@@ -91,3 +91,7 @@ ul.comment-list li.comment:nth-child(even)
 {
     background-color: #fff;
 }
+
+.badge-red {
+    background-color:#d44;
+}

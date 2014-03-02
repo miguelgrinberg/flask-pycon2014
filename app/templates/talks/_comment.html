@@ -1,9 +1,27 @@
 <p>
     {% if comment.author %}
+        {% if index %}
         <span class="label label-primary">#{{ index }}</span>
+        {% endif %}
         <a href="{{ url_for('.user', username=comment.author.username) }}">{{ comment.author.username }}</a>
     {% else %}
+        {% if talk.author == current_user or current_user.is_admin %}
+            {% if not comment.approved %}
+            <div id="moderate-{{ comment.id }}" class="pull-right">
+                <a class="btn btn-primary api-approve" data-id="{{ comment.id }}" href="#"><span class="glyphicon glyphicon-ok"></span> Approve</a>
+                <a class="btn btn-danger api-delete" data-id="{{ comment.id }}" href="#"><span class="glyphicon glyphicon-trash"></span> Delete</a>
+            </div>
+            <div id="approved-{{ comment.id }}" class="pull-right" style="display: none;">
+                <span class="glyphicon glyphicon-ok"></span> <b>Approved</b>
+            </div>
+            <div id="deleted-{{ comment.id }}" class="pull-right" style="display: none;">
+                <span class="glyphicon glyphicon-trash"></span> <b>Deleted</b>
+            </div>
+            {% endif %}
+        {% endif %}
+        {% if index %}
         <span class="label label-default">#{{ index }}</span>
+        {% endif %}
         <b>{{ comment.author_name }}</b>
         {% if current_user.is_authenticated() and (talk.author == current_user or current_user.is_admin) %}
         (<a href="mailto:{{ comment.author_email }}">{{ comment.author_email }}</a>)
