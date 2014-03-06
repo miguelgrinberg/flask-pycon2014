@@ -3,6 +3,12 @@
 {% block page_content %}
 <div class="page-header user-profile">
     <div class="user-avatar"><img src="{{ user.gravatar(128) }}"></div>
+    {% if current_user == user %}<a class="btn btn-default pull-right" href="{{ url_for('talks.profile') }}">Edit Profile</a>{% endif %}
     <h1>{{ user.username }}</h1>
+    <p>
+        {% if user.name %}{{ user.name }}<br>{% endif %}
+        {% if user.location %}<a href="http://maps.google.com?q={{ user.location }}">{{ user.location }}</a><br>{% endif %}
+    </p>
+    {% if user.bio %}<p>{{ user.bio }}</p>{% endif %}
 </div>
 {% endblock %}
