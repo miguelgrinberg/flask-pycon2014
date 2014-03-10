@@ -1,6 +1,8 @@
 from flask import jsonify, g
 from .. import db
 from ..models import Comment
+from ..emails import send_comment_notification
+
 from . import api
 from .errors import forbidden, bad_request
 
@@ -16,6 +18,7 @@ def approve_comment(id):
     comment.approved = True
     db.session.add(comment)
     db.session.commit()
+    send_comment_notification(comment)
     return jsonify({'status': 'ok'})
 
 

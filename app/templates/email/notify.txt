@@ -1,0 +1,10 @@
+Dear {{ name }},
+
+New comments have been posted to talk "{{ talk.title }}". Please visit {{ url_for('talks.talk', id=talk.id, page=-1, _external=True) }}#comments to read them.
+
+Sincerely,
+
+The talks admin
+{% if unsubscribe %}
+PS: This email was sent to {{ email }}. To stop receiving notifications for this talk click here: {{ unsubscribe }}.
+{% endif %}

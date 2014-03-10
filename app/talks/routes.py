@@ -2,7 +2,8 @@ from flask import render_template, flash, redirect, url_for, abort,\
     request, current_app
 from flask.ext.login import login_required, current_user
 from .. import db
-from ..models import User, Talk, Comment
+from ..models import User, Talk, Comment, PendingEmail
+from ..emails import send_author_notification, send_comment_notification
 from . import talks
 from .forms import ProfileForm, TalkForm, CommentForm, PresenterCommentForm
 
@@ -85,8 +86,10 @@ def talk(id):
         db.session.add(comment)
         db.session.commit()
         if comment.approved:
+            send_comment_notification(comment)
             flash('Your comment has been published.')
         else:
+            send_author_notification(talk)
             flash('Your comment will be published after it is reviewed by '
                   'the presenter.')
         return redirect(url_for('.talk', id=talk.id) + '#top')
@@ -139,3 +142,14 @@ def moderate_admin():
         abort(403)
     comments = Comment.for_moderation().order_by(Comment.timestamp.asc())
     return render_template('talks/moderate.html', comments=comments)
+
+
+@talks.route('/unsubscribe/<token>')
+def unsubscribe(token):
+    talk, email = Talk.unsubscribe_user(token)
+    if not talk or not email:
+        flash('Invalid unsubscribe token.')
+        return redirect(url_for('talks.index'))
+    PendingEmail.remove(email)
+    flash('You will not receive any more email notifications about this talk.')
+    return redirect(url_for('talks.talk', id=talk.id))
