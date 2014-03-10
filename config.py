@@ -4,6 +4,8 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 
 class Config:
     SECRET_KEY = os.environ.get('SECRET_KEY')
+    TALKS_PER_PAGE = 50
+    COMMENTS_PER_PAGE = 100
 
 
 class DevelopmentConfig(Config):

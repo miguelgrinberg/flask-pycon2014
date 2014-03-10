@@ -1,6 +1,11 @@
 <ul class="comment-list">
+{% if pagination %}
+    {% set base_index = (pagination.page - 1) * pagination.per_page %}
+{% else %}
+    {% set base_index = 0 %}
+{% endif %}
 {% for comment in comments %}
-    {% set index = loop.index %}
+    {% set index = loop.index + base_index %}
     <li class="comment">
         {% include "talks/_comment.html" %}
     </li>

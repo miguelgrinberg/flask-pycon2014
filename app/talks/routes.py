@@ -1,4 +1,5 @@
-from flask import render_template, flash, redirect, url_for, abort
+from flask import render_template, flash, redirect, url_for, abort,\
+    request, current_app
 from flask.ext.login import login_required, current_user
 from .. import db
 from ..models import User, Talk, Comment
@@ -8,15 +9,25 @@ from .forms import ProfileForm, TalkForm, CommentForm, PresenterCommentForm
 
 @talks.route('/')
 def index():
-    talk_list = Talk.query.order_by(Talk.date.desc()).all()
-    return render_template('talks/index.html', talks=talk_list)
+    page = request.args.get('page', 1, type=int)
+    pagination = Talk.query.order_by(Talk.date.desc()).paginate(
+        page, per_page=current_app.config['TALKS_PER_PAGE'],
+        error_out=False)
+    talk_list = pagination.items
+    return render_template('talks/index.html', talks=talk_list,
+                           pagination=pagination)
 
 
 @talks.route('/user/<username>')
 def user(username):
     user = User.query.filter_by(username=username).first_or_404()
-    talk_list = user.talks.order_by(Talk.date.desc()).all()
-    return render_template('talks/user.html', user=user, talks=talk_list)
+    page = request.args.get('page', 1, type=int)
+    pagination = user.talks.order_by(Talk.date.desc()).paginate(
+        page, per_page=current_app.config['TALKS_PER_PAGE'],
+        error_out=False)
+    talk_list = pagination.items
+    return render_template('talks/user.html', user=user, talks=talk_list,
+                           pagination=pagination)
 
 
 @talks.route('/profile', methods=['GET', 'POST'])
@@ -84,12 +95,17 @@ def talk(id):
         comments_query = talk.comments
     else:
         comments_query = talk.approved_comments()
-    comments = comments_query.order_by(Comment.timestamp.asc()).all()
+    page = request.args.get('page', 1, type=int)
+    pagination = comments_query.order_by(Comment.timestamp.asc()).paginate(
+        page, per_page=current_app.config['COMMENTS_PER_PAGE'],
+        error_out=False)
+    comments = pagination.items
     headers = {}
     if current_user.is_authenticated():
         headers['X-XSS-Protection'] = '0'
     return render_template('talks/talk.html', talk=talk, form=form,
-                           comments=comments), 200, headers
+                           comments=comments, pagination=pagination),\
+           200, headers
 
 
 @talks.route('/edit/<int:id>', methods=['GET', 'POST'])
