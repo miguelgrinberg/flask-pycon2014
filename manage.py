@@ -10,6 +10,14 @@ manager = Manager(app)
 
 
 @manager.command
+def test():
+    from subprocess import call
+    call(['nosetests', '-v',
+          '--with-coverage', '--cover-package=app', '--cover-branches',
+          '--cover-erase', '--cover-html', '--cover-html-dir=cover'])
+
+
+@manager.command
 def adduser(email, username, admin=False):
     """Register a new user."""
     from getpass import getpass
