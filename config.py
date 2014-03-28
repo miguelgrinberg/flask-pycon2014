@@ -14,6 +14,7 @@ class Config:
     MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
     MAIL_DEFAULT_SENDER = os.environ.get('MAIL_SENDER') or 'nobody@example.com'
     MAIL_FLUSH_INTERVAL = 3600  # one hour
+    MAIL_ERROR_RECIPIENT = os.environ.get('MAIL_ERROR_RECIPIENT')
 
 
 class DevelopmentConfig(Config):
