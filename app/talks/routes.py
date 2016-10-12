@@ -67,7 +67,7 @@ def new_talk():
 def talk(id):
     talk = Talk.query.get_or_404(id)
     comment = None
-    if current_user.is_authenticated():
+    if current_user.is_authenticated:
         form = PresenterCommentForm()
         if form.validate_on_submit():
             comment = Comment(body=form.body.data,
@@ -94,7 +94,7 @@ def talk(id):
                   'the presenter.')
         return redirect(url_for('.talk', id=talk.id) + '#top')
     if talk.author == current_user or \
-            (current_user.is_authenticated() and current_user.is_admin):
+            (current_user.is_authenticated and current_user.is_admin):
         comments_query = talk.comments
     else:
         comments_query = talk.approved_comments()
@@ -104,7 +104,7 @@ def talk(id):
         error_out=False)
     comments = pagination.items
     headers = {}
-    if current_user.is_authenticated():
+    if current_user.is_authenticated:
         headers['X-XSS-Protection'] = '0'
     return render_template('talks/talk.html', talk=talk, form=form,
                            comments=comments, pagination=pagination),\

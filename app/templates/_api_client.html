@@ -1,4 +1,4 @@
-{% if current_user.is_authenticated() %}
+{% if current_user.is_authenticated %}
 <script>
     var talks_api_token = "{{ current_user.get_api_token() | safe }}";
     function talks_api(url, method, data, success, error) {
