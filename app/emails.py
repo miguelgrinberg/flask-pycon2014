@@ -2,7 +2,7 @@ from threading import Thread
 import time
 from datetime import datetime
 from flask import current_app, render_template, url_for
-from flask.ext.mail import Message
+from flask_mail import Message
 from . import db
 from .models import PendingEmail
 from . import mail

@@ -5,7 +5,7 @@ import bleach
 from werkzeug.security import generate_password_hash, check_password_hash
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from flask import request, current_app
-from flask.ext.login import UserMixin
+from flask_login import UserMixin
 from . import db, login_manager
 
 
