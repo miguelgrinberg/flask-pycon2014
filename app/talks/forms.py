@@ -1,8 +1,8 @@
-from flask.ext.wtf import Form
+from flask_wtf import Form
 from wtforms import StringField, TextAreaField, BooleanField, SubmitField
 from wtforms.fields.html5 import DateField
 from wtforms.validators import Optional, Length, Required, URL, Email
-from flask.ext.pagedown.fields import PageDownField
+from flask_pagedown.fields import PageDownField
 
 
 class ProfileForm(Form):

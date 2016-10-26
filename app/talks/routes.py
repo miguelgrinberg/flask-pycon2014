@@ -1,6 +1,6 @@
 from flask import render_template, flash, redirect, url_for, abort,\
     request, current_app
-from flask.ext.login import login_required, current_user
+from flask_login import login_required, current_user
 from .. import db
 from ..models import User, Talk, Comment, PendingEmail
 from ..emails import send_author_notification, send_comment_notification
